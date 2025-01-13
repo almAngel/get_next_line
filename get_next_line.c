@@ -6,44 +6,73 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 14:17:57 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/10 16:49:27 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/13 21:24:33 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 42
+#define BUFFER_SIZE 42
 #endif
 
-char	*get_next_line(int fd)
+char	*ft_check_for_line_return_remainder(char *buff)
 {
-	static char	storage[BUFFER_SIZE];
-	char		*response;
-	ssize_t		bytes_read;
+	char	*newline;
 
-	if (fd <= 0)
-		return (NULL);
-	while(bytes_read > 0)
-	{
-		bytes_read = read(fd, storage, BUFFER_SIZE);
-		if (ft_strchr(storage, '\n'))
-	}
-	return ("");
+	newline = ft_strchr(buff, '\n');
+	if (newline)
+		return (newline + 1);
+	return (buff);
 }
 
-char	*ft_read_until(char *left, char *right)
+char *ft_cut_till_newline_including(char *buff)
 {
-	char	*res;
-	int		len;
-	int		i;
+	char *response;
+	int i;
 
 	i = 0;
-	len = right - left;
-	res = ft_calloc(len, 1);
-	while (i++ < len - 1)
-		res[i] = left[i];
-	return (res);
+	response = ft_strdup(buff);
+	if (ft_strchr(response, '\n'))
+	{
+		while (response[i] != '\n')
+			i++;
+		response[i + 1] = 0;
+		return (response);
+	}
+	return (NULL);
+}
+
+char *get_next_line(int fd)
+{
+	char buff[BUFFER_SIZE + 1];
+	static char *remainder;
+	char *line;
+	ssize_t bytes_read;
+
+	line = NULL;
+	bytes_read = 1;
+	if (fd <= 0)
+		return (NULL);
+	else
+	{
+		if (!remainder)
+			remainder = malloc(1);
+		while (bytes_read > 0)
+		{
+			bytes_read = read(fd, buff, BUFFER_SIZE);
+			buff[bytes_read] = 0;
+			remainder = ft_strjoin(remainder, buff);
+			line = ft_strchr(remainder, '\n');
+			if (line)
+			{
+				line = ft_cut_till_newline_including(remainder);
+				remainder = ft_check_for_line_return_remainder(remainder);
+				return (line);
+			}
+		}
+	}
+	return (line);
 }
 
 int main(void)
@@ -51,5 +80,10 @@ int main(void)
 	#include "fcntl.h"
 	int fd = open("data", O_RDONLY);
 
-	get_next_line(fd);
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
 }

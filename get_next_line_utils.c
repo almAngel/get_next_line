@@ -6,11 +6,24 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 16:17:05 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/10 16:46:42 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/13 20:45:27 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+size_t	ft_strlen(const char *str)
+{
+	size_t	n;
+
+	n = 0;
+	while (*str)
+	{
+		n++;
+		str++;
+	}
+	return (n);
+}
 
 char	*ft_strchr(const char *s, int c)
 {
@@ -29,16 +42,49 @@ char	*ft_strchr(const char *s, int c)
 	return ((char *) &s[i]);
 }
 
-void	*ft_calloc(size_t nmemb, size_t size)
+char	*ft_strdup(const char *s)
 {
-	void	*result;
+	int		i;
+	char	*s_cpy;
+	size_t	len;
 
-	result = malloc(nmemb * size);
-	if (!result)
+	i = 0;
+	len = ft_strlen(s);
+	s_cpy = malloc(len + 1);
+	if (!s_cpy)
 		return (NULL);
-	else
+	while (s[i])
 	{
-		ft_bzero(result, (nmemb * size));
-		return (result);
+		s_cpy[i] = s[i];
+		i++;
 	}
+	s_cpy[i] = 0;
+	return (s_cpy);
+}
+
+char	*ft_strjoin(const char *s1, const char *s2)
+{
+	char	*s3;
+	size_t	i;
+	size_t	s1_len;
+	size_t	t_len;
+
+	i = 0;
+	s1_len = ft_strlen(s1);
+	t_len = s1_len + ft_strlen(s2);
+	s3 = malloc(t_len + 1);
+	if (!s3)
+		return (NULL);
+	while (i < s1_len)
+	{
+		s3[i] = s1[i];
+		i++;
+	}
+	while (i < t_len)
+	{
+		s3[i] = s2[i - s1_len];
+		i++;
+	}
+	s3[i] = 0;
+	return (s3);
 }
