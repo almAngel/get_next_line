@@ -6,7 +6,7 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 14:17:57 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/13 21:24:33 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/13 21:26:32 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char *get_next_line(int fd)
 	else
 	{
 		if (!remainder)
-			remainder = malloc(1);
+			remainder = ft_strdup("");
 		while (bytes_read > 0)
 		{
 			bytes_read = read(fd, buff, BUFFER_SIZE);
