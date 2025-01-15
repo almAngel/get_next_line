@@ -6,7 +6,7 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 14:17:57 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/15 21:26:52 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/15 22:37:31 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,32 @@ char	*ft_check_for_line_return_remainder(char *buff)
 	char	*newline;
 
 	newline = ft_strchr(buff, '\n');
-	free(buff);
 	if (newline)
 		return (newline + 1);
-	return (NULL);
+	return (buff);
 }
 
 char	*ft_cut_till_newline_including(char *buff)
 {
+	char	*response;
 	char	*nl;
+	int		i;
+	int		len;
 
+	i = 0;
 	nl = ft_strchr(buff, '\n');
 	if (nl)
-		return (ft_substr(buff, 0, (nl - buff) + 1));
+	{
+		len = (nl - buff) + 1;
+		response = malloc(len + 1);
+		while (i < len)
+		{
+			response[i] = buff[i];
+			i++;
+		}
+		response[i] = 0;
+		return (response);
+	}
 	return (NULL);
 }
 
@@ -49,22 +62,27 @@ char	*get_next_line(int fd)
 	line = "";
 	bytes_read = 1;
 	remainder = ft_strdup("");
-	while (bytes_read > 0)
+	while (bytes_read > 0 || *remainder)
 	{
 		bytes_read = read(fd, buff, BUFFER_SIZE);
 		buff[bytes_read] = 0;
 		remainder = ft_strjoin(remainder, buff);
-		if (bytes_read == 0 && *remainder)
-			return (remainder);
-		if (ft_strchr(buff, '\n'))
+		printf("remainder1: '%s'\n", remainder);
+		if (ft_strchr(remainder, '\n'))
 		{
 			line = ft_cut_till_newline_including(remainder);
 			remainder = ft_check_for_line_return_remainder(remainder);
+			printf("remainder2: '%s'\n", remainder);
 			return (line);
 		}
+		if (bytes_read == 0 && ft_strlen(remainder) >= 1)
+			return (remainder);
 	}
-	free(remainder);
-	remainder = NULL;
+	if (*remainder)
+	{
+		free(remainder);
+		remainder = NULL;	
+	}
 	return (NULL);
 }
 
@@ -74,15 +92,15 @@ int main(void)
 	int fd;
 	char *line;
 
-	// // Test archivo normal
-	// printf("\n=== Test archivo normal ===\n");
-	// fd = open("normal.txt", O_RDONLY);
-	// while ((line = get_next_line(fd)) != NULL)
-	// {
-	// 	printf("%s", line);
-	// 	free(line);
-	// }
-	// close(fd);
+	// Test archivo normal
+	printf("\n=== Test archivo normal ===\n");
+	fd = open("normal.txt", O_RDONLY);
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		printf("%s", line);
+		// free(line);
+	}
+	close(fd);
 
 	// // Test archivo vacío
 	// printf("\n=== Test archivo vacío ===\n");
@@ -101,15 +119,15 @@ int main(void)
 	// }
 	// close(fd);
 
-	// Test archivo mutiple_nl
-	printf("\n=== Test archivo mutiple_nl ===\n");
-	fd = open("mutiple_nl", O_RDONLY);
-	while ((line = get_next_line(fd)) != NULL)
-	{
-		printf("%s", line);
-		free(line);	
-	}
-	close(fd);
+	// // Test archivo mutiple_nl
+	// printf("\n=== Test archivo mutiple_nl ===\n");
+	// fd = open("mutiple_nl", O_RDONLY);
+	// while ((line = get_next_line(fd)) != NULL)
+	// {
+	// 	printf("%s", line);
+	// 	free(line);	
+	// }
+	// close(fd);
 
 	// // Test archivo grande
 	// printf("\n=== Test archivo grande ===\n");

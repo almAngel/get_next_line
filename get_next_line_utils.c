@@ -6,7 +6,7 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 16:17:05 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/15 21:26:38 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/15 22:37:17 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (s3);
 }
 
-char	*ft_substr(const char *s, unsigned int start, size_t len)
+char	*ft_substr(char *s, unsigned int start, size_t len)
 {
 	char	*response;
 	size_t	i;
