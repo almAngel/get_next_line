@@ -6,7 +6,7 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 14:12:59 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/13 20:44:28 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/15 21:00:40 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 size_t	ft_strlen(const char *str);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strdup(const char *s);
-char	*ft_strjoin(const char *s1, const char *s2);
-void	*ft_calloc(size_t nmemb, size_t size);
+char	*ft_strjoin(char *s1, char *s2);
+char	*ft_substr(const char *s, unsigned int start, size_t len);
 
 char	*get_next_line(int fd);
 

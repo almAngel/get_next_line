@@ -6,7 +6,7 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 16:17:05 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/13 20:45:27 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/15 21:26:38 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ size_t	ft_strlen(const char *str)
 	size_t	n;
 
 	n = 0;
+	if (!*str)
+		return (0);
 	while (*str)
 	{
 		n++;
@@ -49,10 +51,16 @@ char	*ft_strdup(const char *s)
 	size_t	len;
 
 	i = 0;
+	if (!s)
+		return (NULL);
 	len = ft_strlen(s);
 	s_cpy = malloc(len + 1);
 	if (!s_cpy)
+	{
+		free(s_cpy);
+		s_cpy = NULL;
 		return (NULL);
+	}
 	while (s[i])
 	{
 		s_cpy[i] = s[i];
@@ -62,7 +70,7 @@ char	*ft_strdup(const char *s)
 	return (s_cpy);
 }
 
-char	*ft_strjoin(const char *s1, const char *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*s3;
 	size_t	i;
@@ -80,6 +88,7 @@ char	*ft_strjoin(const char *s1, const char *s2)
 		s3[i] = s1[i];
 		i++;
 	}
+	free(s1);
 	while (i < t_len)
 	{
 		s3[i] = s2[i - s1_len];
@@ -87,4 +96,28 @@ char	*ft_strjoin(const char *s1, const char *s2)
 	}
 	s3[i] = 0;
 	return (s3);
+}
+
+char	*ft_substr(const char *s, unsigned int start, size_t len)
+{
+	char	*response;
+	size_t	i;
+
+	if (!s)
+		return (NULL);
+	if (start > ft_strlen(s))
+		return (ft_strdup(""));
+	if (len > ft_strlen(s + start))
+		len = ft_strlen(s + start);
+	response = malloc(len + 1);
+	if (!response)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		response[i] = s[start + i];
+		i++;
+	}
+	response[i] = 0;
+	return (response);
 }
