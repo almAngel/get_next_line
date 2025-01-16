@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 14:17:57 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/16 21:33:35 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/16 21:41:05 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 42
@@ -99,16 +99,16 @@ char	*ft_mount_line(int fd, char *remaining)
 
 char	*get_next_line(int fd)
 {
-	static char	*remaining;
+	static char	*remaining[4096];
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	remaining = ft_mount_line(fd, remaining);
-	if (!remaining)
+	remaining[fd] = ft_mount_line(fd, remaining[fd]);
+	if (!remaining[fd])
 		return (NULL);
-	line = ft_cut_till_newline_including(remaining);
-	remaining = ft_check_for_line_return_remainder(remaining);
+	line = ft_cut_till_newline_including(remaining[fd]);
+	remaining[fd] = ft_check_for_line_return_remainder(remaining[fd]);
 	return (line);
 }
 
