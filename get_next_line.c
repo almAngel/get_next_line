@@ -6,84 +6,100 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 14:17:57 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/15 22:37:31 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/16 03:34:56 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 42
+#define BUFFER_SIZE 42
 #endif
 
-char	*ft_check_for_line_return_remainder(char *buff)
+char *ft_check_for_line_return_remainder(char *buff)
 {
-	char	*newline;
-
+	char *newline;
+	
+	if (!*buff)
+	{
+		free(buff);
+		return (NULL);
+	}
 	newline = ft_strchr(buff, '\n');
 	if (newline)
-		return (newline + 1);
-	return (buff);
+		return (ft_strdup(newline + 1));
+	return (NULL);
 }
 
 char	*ft_cut_till_newline_including(char *buff)
 {
-	char	*response;
-	char	*nl;
-	int		i;
-	int		len;
+	char *line;
+	char *nl;
+	int i;
+	int len;
 
 	i = 0;
+	if (!*buff)
+		return (NULL);
 	nl = ft_strchr(buff, '\n');
-	if (nl)
+	len = (nl - buff) + 1;
+	line = malloc(len + 1);
+	while (i < len)
 	{
-		len = (nl - buff) + 1;
-		response = malloc(len + 1);
-		while (i < len)
-		{
-			response[i] = buff[i];
-			i++;
-		}
-		response[i] = 0;
-		return (response);
+		line[i] = buff[i];
+		i++;
 	}
-	return (NULL);
+	line[i] = 0;
+	return (line);
 }
 
-char	*get_next_line(int fd)
+char *ft_safe_strjoin(char *remaining, char *buff)
 {
-	char		buff[BUFFER_SIZE + 1];
-	static char	*remainder;
-	char		*line;
-	ssize_t		bytes_read;
+	char *new;
 
-	if (fd < 0)
-		return (NULL);
-	line = "";
+	new = ft_strjoin(remaining, buff);
+	free(remaining);
+	return (new);
+}
+
+char *ft_mount_line(int fd, char *remaining)
+{
+	char buff[BUFFER_SIZE + 1];
+	ssize_t bytes_read;
+
+	if (!remaining)
+		remaining = ft_strdup("");
 	bytes_read = 1;
-	remainder = ft_strdup("");
-	while (bytes_read > 0 || *remainder)
+	while (bytes_read > 0)
 	{
 		bytes_read = read(fd, buff, BUFFER_SIZE);
-		buff[bytes_read] = 0;
-		remainder = ft_strjoin(remainder, buff);
-		printf("remainder1: '%s'\n", remainder);
-		if (ft_strchr(remainder, '\n'))
+		if (bytes_read == -1)
 		{
-			line = ft_cut_till_newline_including(remainder);
-			remainder = ft_check_for_line_return_remainder(remainder);
-			printf("remainder2: '%s'\n", remainder);
-			return (line);
+			free(remaining);
+			return (NULL);
 		}
-		if (bytes_read == 0 && ft_strlen(remainder) >= 1)
-			return (remainder);
+		buff[bytes_read] = 0;
+		remaining = ft_safe_strjoin(remaining, buff);
+		if (ft_strchr(remaining, '\n'))
+			break;
 	}
-	if (*remainder)
-	{
-		free(remainder);
-		remainder = NULL;	
-	}
-	return (NULL);
+	return (remaining);
+}
+
+char *get_next_line(int fd)
+{
+	static char *remaining;
+	char *line;
+
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+		return (NULL);
+	remaining = ft_mount_line(fd, remaining);
+	if (!remaining)
+		return (NULL);
+	line = ft_cut_till_newline_including(remaining);
+	remaining = ft_check_for_line_return_remainder(remaining);
+
+	return (line);
 }
 
 #include <fcntl.h>
@@ -98,7 +114,7 @@ int main(void)
 	while ((line = get_next_line(fd)) != NULL)
 	{
 		printf("%s", line);
-		// free(line);
+		free(line);
 	}
 	close(fd);
 
@@ -106,18 +122,21 @@ int main(void)
 	// printf("\n=== Test archivo vacío ===\n");
 	// fd = open("empty.txt", O_RDONLY);
 	// while ((line = get_next_line(fd)) != NULL)
-	//     printf("%s", line);
-	// close(fd);
-
-	// // Test archivo 1char
-	// printf("\n=== Test archivo 1char ===\n");
-	// fd = open("1char", O_RDONLY);
-	// while ((line = get_next_line(fd)) != NULL)
 	// {
-	// 	printf("%s", line);
-	// 	free(line);	
+	//     printf("%s", line);
+	// 	free(line);
 	// }
 	// close(fd);
+
+	// Test archivo 1char
+	printf("\n=== Test archivo 1char ===\n");
+	fd = open("1char", O_RDONLY);
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		printf("%s", line);
+		free(line);
+	}
+	close(fd);
 
 	// // Test archivo mutiple_nl
 	// printf("\n=== Test archivo mutiple_nl ===\n");
@@ -125,7 +144,7 @@ int main(void)
 	// while ((line = get_next_line(fd)) != NULL)
 	// {
 	// 	printf("%s", line);
-	// 	free(line);	
+	// 	free(line);
 	// }
 	// close(fd);
 
