@@ -6,7 +6,7 @@
 /*   By: angellop <angellop@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/10 16:17:05 by angellop          #+#    #+#             */
-/*   Updated: 2025/01/16 03:16:58 by angellop         ###   ########.fr       */
+/*   Updated: 2025/01/16 19:22:07 by angellop         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	i = 0;
 	s1_len = ft_strlen(s1);
 	t_len = s1_len + ft_strlen(s2);
-	s3 = malloc(t_len + 1);
+	s3 = ft_calloc(1, t_len + 1);
 	if (!s3)
 		return (NULL);
 	while (i < s1_len)
@@ -93,4 +93,26 @@ char	*ft_strjoin(char *s1, char *s2)
 	}
 	s3[i] = 0;
 	return (s3);
+}
+
+void	ft_bzero(void *str, unsigned long int n)
+{
+	char				*s;
+	unsigned long int	i;
+
+	s = (char *)str;
+	i = 0;
+	while (i < n)
+		s[i++] = '\0';
+}
+
+void	*ft_calloc(unsigned long int size, unsigned long int c)
+{
+	char	*result;
+
+	result = malloc(size * c);
+	if (!result)
+		return (NULL);
+	ft_bzero(result, (size * c));
+	return (result);
 }
